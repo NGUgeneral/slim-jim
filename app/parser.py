@@ -66,9 +66,12 @@ class SlimJimParser:
                     header, base64_data = src.split(",", 1)
                     mime_type = header.split(";")[0]  # "data:image/png"
                     img_format = mime_type.split("/")[1]  # "png", "jpeg", etc.
+
+                    if img_format not in ["png", "jpeg", "jpg"]:
+                        node.extract()
+                        return
                     
                     node["slimjim_type"] = "image"
-                    node["slimjim_format"] = img_format
                     node["slimjim_value"] = base64_data
                 except IndexError:
                     # Defensive purge: Malformed data URI asset structure gets vaporized
