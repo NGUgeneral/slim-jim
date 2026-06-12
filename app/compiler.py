@@ -85,17 +85,27 @@ class SlimJimCompiler:
         val = node["slimjim_value"]
 
         if sj_type == "barcode":
-            d = Drawing(200, 50)
-            bc = code128.Code128(val, barWidth=1.2, barHeight=40)
-            d.add(bc)
-            story.append(d)
+            barcode_value = node.get("data-barcode")
+            bc = code128.Code128(barcode_value, barWidth=1.2, barHeight=50)
+            story.append(bc)
 
         elif sj_type == "qrcode":
-            d = Drawing(80, 80)
-            qr = QrCodeWidget(val)
-            qr.width = 80
-            qr.height = 80
+            qr_code_value = node.get("data-qrcode")
+            w = float(node.get("width", 100))
+            h = float(node.get("height", 100))
+            
+            qr = QrCodeWidget(qr_code_value)
+
+            qr.barWidth = w
+            qr.barHeight = h
+
+            bounds = qr.getBounds()
+            qr_w = bounds[2] - bounds[0]
+            qr_h = bounds[3] - bounds[1]
+
+            d = Drawing(qr_w, qr_h)
             d.add(qr)
+            
             story.append(d)
 
         elif sj_type == "image":
