@@ -78,3 +78,20 @@ To spin up a local live-reloading development worker instance:
 ```bash
 uvicorn app.main:app --reload --port 8000
 ```
+
+---
+### Few raw html payload examples:
+
+```html
+"<html><body><h1>INBOUND LOGISTICS MANIFEST</h1><p>Facility Location: Rotterdam Hub - Dock 4</p><p>Target Assignment: Zone B / Racking Tier 3</p><br/><h2>ITEM VERIFICATION</h2><p>SKU-88234-A: Industrial Steel Brackets (Qty: 24)</p><br/><div data-barcode=\"ROT-88234-A\" width=\"1.5\" height=\"60\"></div><br/><p>Scan manifest barcode upon storage confirmation.</p></body></html>"
+```
+
+
+```html
+"<html><body><h1>GLOBAL SUPPLY CHAIN RECEIPT</h1><p>Transaction ID: TXN-2026-99381A</p><p>Origin Dispatch: Berlin Complex</p><p>Destination Terminal: Amsterdam Central Depot</p><br/><h2>SECTION 1: DISPATCH LINE CONDITIONS</h2><p>All freight line variables checked and verified inline at point of departure. Temperature seals structurally sound. Packaging material integrity confirmed within operational tolerances.</p><br/><br/><br/><br/><br/><br/><h2>SECTION 2: MID-TRANSIT AUDIT LOGS</h2><p>Automated boundary checks executed at boundary cross-dock points. Core telematics telemetry confirmed stable payload positioning. No mechanical vibration anomalies reported by tracking telemetry units.</p><br/><br/><br/><br/><br/><br/><h2>SECTION 3: CONSIGNMENT RECEIPT SIGN-OFF</h2><p>Final receiving agent signature required below. By scanning the processing QR sequence, the terminal operator certifies that the physical counts match the electronic transport ledger exactly.</p><br/><div data-qrcode=\"https://slimjim.io/verify/txn-99381a\" width=\"140\" height=\"140\"></div></body></html>"
+```
+
+
+```html
+"<html><body><h1>DISTRIBUTION ROUTING LABEL</h1><p>Carrier Route: NL-DH-04</p><br/><img src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=' width='250' height='6' /><br/><p>Security Signature Verification Fingerprint Verified</p><br/><div data-qrcode='https://slimjim.io/route/nl-dh-04' width='100' height='100'></div></body></html>"
+```
