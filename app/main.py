@@ -1,38 +1,46 @@
-from io import BytesIO
+import logging
 from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import StreamingResponse
+from pydantic import BaseModel, Field
 
-from .schemas import PDFGenerationRequest
+# Wire up our actual engine components
+from app.parser import SlimJimParser
+from app.compiler import SlimJimCompiler
 
-app = FastAPI(
-    title="Slim Jim",
-    description="A Lean HTML-to-PDF Converter Service",
-    version="1.0.0"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s"
 )
+logger = logging.getLogger("slimjim")
 
-@app.post(
-    "/v1/generate-pdf",
-    response_class=StreamingResponse,
-    summary="Convert raw HTML into a streaming PDF binary",
-    status_code=status.HTTP_200_OK
-)
-async def generate_pdf(payload: PDFGenerationRequest) -> StreamingResponse:
+app = FastAPI(title="Slim Jim", version="1.0.0")
+
+# Singletons initialized for the lifecycle of the app
+pdf_parser = SlimJimParser()
+pdf_compiler = SlimJimCompiler()
+
+class RenderRequest(BaseModel):
+    html: str
+    preset: str = "a4"
+
+# Ensure this matches the exact route your tests are calling!
+@app.post("/v1/generate-pdf", response_class=StreamingResponse, status_code=status.HTTP_200_OK)
+async def render_pdf(payload: RenderRequest):
     try:
-        dummy_buffer = BytesIO()
-        dummy_buffer.write(b"%PDF-1.4 Baseline Placeholder Stream")
-        dummy_buffer.seek(0)
+        # Run the real isolation pass
+        sanitized_soup = pdf_parser.sanitize_and_normalize(payload.html)
+        
+        # Run the real layout engine execution pass
+        pdf_stream = pdf_compiler.build_pdf_stream(sanitized_soup, page_size_preset=payload.preset)
         
         return StreamingResponse(
-            dummy_buffer,
+            pdf_stream,
             media_type="application/pdf",
-            headers={
-                "Content-Disposition": "attachment; filename=document.pdf",
-                "Cache-Control": "no-cache, no-store, must-revalidate"
-            }
+            headers={"Content-Disposition": "attachment; filename=document.pdf"}
         )
-        
     except Exception as e:
+        logger.error(f"Pipeline Execution Panic: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to compile PDF document stream: {str(e)}"
+            detail="Pipeline execution halted due to corrupt asset payloads or unrenderable tree constraints."
         )

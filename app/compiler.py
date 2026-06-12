@@ -101,6 +101,9 @@ class SlimJimCompiler:
         elif sj_type == "image":
             img_bytes = base64.b64decode(val)
             img_stream = BytesIO(img_bytes)
+
+            reader = ImageReader(img_stream)
+            pixel_w, pixel_h = reader.getSize()
             
             html_w = node.get("width")
             html_h = node.get("height")
@@ -109,9 +112,6 @@ class SlimJimCompiler:
                 w = float(html_w)
                 h = float(html_h)
             else:
-                reader = ImageReader(img_stream)
-                pixel_w, pixel_h = reader.getSize()
-                
                 w = float(pixel_w)
                 h = float(pixel_h)
             
