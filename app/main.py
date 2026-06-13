@@ -1,6 +1,7 @@
 import logging
 from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import StreamingResponse
+from mangum import Mangum
 from pydantic import BaseModel, Field
 
 from app.parser import SlimJimParser
@@ -38,3 +39,5 @@ async def render_pdf(payload: RenderRequest):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Pipeline execution halted due to corrupt asset payloads or unrenderable tree constraints."
         )
+    
+handler = Mangum(app)
