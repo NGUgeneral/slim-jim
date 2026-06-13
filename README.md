@@ -2,9 +2,17 @@
 
 ## About Slim Jim
 
-Slim Jim was engineered to solve a very specific problem: **high-load, simple-layout PDF generation.** Not every HTML-to-PDF pipeline requires a Swiss Army knife level of layout detail or a complete web-rendering runtime. When your goal is to generate hundreds of thousands of "primitive" files—like barcodes, shipping labels, thermal tags, or picking receipts in a fast-paced warehouse—you don't need a heavy browser layout engine to draw text and vector shapes. Slim Jim is a lean, tailored solution for exactly these high-velocity situations.
+When we think about converting HTML to a PDF, we usually have a very simple expectation in our head: the generated document should mirror the source markup 1-to-1. In reality, the underlying process is incredibly complex and far less straightforward than it looks at first glance. 
 
-It acts as an ultra-fast, stateless compilation bridge that translates a highly optimized, simplified HTML subset directly into native ReportLab canvas instructions. 
+Over decades of open-source and commercial development, the engineering community has provided several powerful ways to bridge this gap. Generally, these solutions fall into two main camps:
+
+1. **Dedicated PDF Manipulation Libraries:** Tools like iText or commercial equivalents largely support HTML-to-PDF pipelines natively. However, they carry distinct trade-offs. First, they come with licensing prices that most teams find surprisingly high for a standalone utility. Second, you introduce a heavy "black box" into your application layer, making your architecture entirely dependent on a third party for support, security updates, and bug fixes.
+2. **The Unvetted Open-Source Wrappers:** The internet is full of obscure, community-maintained Python wrappers that promise easy HTML-to-PDF conversions. Under the hood, however, these packages almost always rely on outdated system binaries (like `wkhtmltopdf`, which was archived and deprecated years ago). Introducing these to an enterprise application means dragging a massive, unmaintained dependency tree into your codebase—often requiring custom Linux OS packages to be installed on your host container. For corporate security teams, these unvetted "black box" system binaries are an immediate red flag that will never pass a modern compliance audit.
+3. **Headless Browser Emulation:** Tools like Puppeteer, Playwright, or Chromium load the entire DOM into a headless browser instance and render the visual snapshot out to a PDF. This approach is highly effective and easily handles complex HTML, grid layouts, and embedded media without structural limitations. But from an infrastructure standpoint, the process is as heavy as it gets. Running an entire web browser runtime to handle thousands of requests in a high-load system introduces massive resource overhead and leaves a staggering amount of work on the table for optimization.
+
+This exact bottleneck sparked the original requirements for what became Slim Jim: a high-load, simple-layout PDF generation engine tailored for specific, high-velocity use cases. When your goal is to generate hundreds of thousands of "primitive" files—like barcodes, shipping labels, thermal tags, or picking receipts in a fast-paced warehouse—you don't need a heavy browser layout engine or an expensive enterprise suite just to draw text and vector shapes. Slim Jim is a lean, tailored solution for exactly these situations.
+
+It acts as an ultra-fast, stateless compilation bridge that translates a highly optimized, simplified HTML subset directly into native ReportLab canvas instructions.
 
 ### Core Architectural Features:
 
